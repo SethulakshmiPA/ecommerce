@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import './signup.css';
 
 const Signup = () => {
+  const [password, setPassword] = useState('');
   const [fullname, setFullname] = useState('');
   const [email, setEmail] = useState('');
   const [phonenumber, setPhonenumber] = useState('');
@@ -15,11 +16,13 @@ const Signup = () => {
   const [userrole, setUserrole] = useState('');
   const navigate = useNavigate();
 
-  const handleSignup = (e) => {
+  const handleSignup = async (e) => {
     e.preventDefault();
+
     if (
       fullname &&
       email &&
+      password &&
       phonenumber &&
       address_line_1 &&
       city &&
@@ -28,9 +31,47 @@ const Signup = () => {
       country &&
       userrole
     ) {
-      // Temporary signup functionality
-      localStorage.setItem('isLoggedIn', true);
-      navigate('/admin');
+      try {
+        const response = await fetch('http://localhost:5000/api/users/signup', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            fullname,
+            email,
+            password,
+            phonenumber,
+            address_line_1,
+            address_line_2,
+            city,
+            state,
+            postal_code,
+            country,
+            userrole,
+          }),
+        });
+
+        const data = await response.json(); // Parse the response as JSON
+
+        if (response.ok) { // Check if the response status is OK
+          alert('Signup successful');
+          localStorage.setItem('isLoggedIn', true);
+          
+          // Store the user ID in local storage without attaching it to the URL
+          if (data.userId) {
+            localStorage.setItem('userId', data.userId); // Store the user ID in local storage
+            navigate('/admin'); // Navigate to the admin page without user ID in the URL
+          } else {
+            alert('User ID not found in response');
+          }
+        } else {
+          alert(data.message || 'Failed to insert data into database'); // Use the message from the backend if available
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred during signup');
+      }
     } else {
       alert('Please fill out all fields');
     }
@@ -53,6 +94,12 @@ const Signup = () => {
               placeholder="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
             />
             <input
               type="text"
@@ -94,23 +141,22 @@ const Signup = () => {
               type="text"
               placeholder="Country"
               value={country}
-              onChange={(e) => setCountry(e.target.value)}
-             />
-             <select value={userrole} onChange={(e) => setUserrole(e.target.value)}>
-               <option value="">Select User Role</option>
-               <option value="admin">Admin</option>
-               <option value="user">User</option>
-             </select>
-             <button type="submit">Sign up</button>
-           </form>
-           <p>
-             Already have an account? <a href="/">Login</a>
-           </p>
-         </div>
-       </div>
-     </div>
-   );
- };
- 
- export default Signup;
- 
+              onChange={(e) => setCountry(e.target.value)}
+            />
+            <select value={userrole} onChange={(e) => setUserrole(e.target.value)}>
+              <option value="">Select User Role</option>
+              <option value="admin">Admin</option>
+              <option value="user">User</option>
+            </select>
+            <button type="submit">Sign up</button>
+          </form>
+          <p>
+            Already have an account? <a href="/">Login</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Signup;
