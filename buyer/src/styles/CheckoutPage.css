@@ -1,43 +1,86 @@
-/* src/styles/CheckoutPage.css */
-.checkout-page {
-    padding: 20px;
-    background-color: #f4f4f4;
+/* Main container for the checkout page */
+.checkout-container {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  max-width: 800px; /* Set a max width for the checkout container */
+  margin: auto; /* Center the container */
+  background-color: #ffffff; /* White background for contrast */
+  border-radius: 8px; /* Rounded corners */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+}
+
+/* Header style */
+.checkout-container h2 {
+  font-size: 2rem; /* Heading size */
+  color: #333; /* Dark text color */
+  margin-bottom: 20px; /* Space below heading */
+  text-align: center; /* Center the heading */
+}
+
+/* Input field styles */
+.checkout-input {
+  margin-bottom: 15px; /* Space between input fields */
+}
+
+.checkout-input label {
+  display: block; /* Labels on top of inputs */
+  margin-bottom: 5px; /* Space between label and input */
+  font-weight: bold; /* Bold labels */
+}
+
+.checkout-input input,
+.checkout-input select {
+  width: 100%; /* Full width */
+  padding: 10px; /* Inner padding */
+  border: 1px solid #ccc; /* Light gray border */
+  border-radius: 4px; /* Rounded corners */
+  font-size: 1rem; /* Font size */
+}
+
+/* Button styles */
+.place-order {
+  background-color: #ff3e6c; /* Main color */
+  color: white; /* White text */
+  padding: 10px 15px; /* Reduced padding for smaller button */
+  margin-top: 20px; /* Space above the button */
+  border: none; /* No border */
+  border-radius: 4px; /* Rounded corners */
+  cursor: pointer; /* Pointer cursor on hover */
+  font-size: 1rem; /* Font size */
+  transition: background-color 0.3s; /* Smooth transition on hover */
+}
+
+/* Button hover effect */
+.place-order:hover {
+  background-color: #d12d54; /* Darker shade on hover */
+}
+
+/* Summary section styling */
+.summary {
+  margin-top: 30px; /* Space above summary */
+  padding: 15px;
+  background-color: #f7f7f7; /* Light gray background */
+  border-radius: 8px; /* Rounded corners */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Light shadow */
+}
+
+.summary h3 {
+  font-size: 1.5rem; /* Summary heading size */
+  margin-bottom: 10px; /* Space below heading */
+}
+
+.summary p {
+  margin: 5px 0; /* Space between summary items */
+}
+
+/* Responsive styles */
+@media (max-width: 600px) {
+  .checkout-container {
+    padding: 10px; /* Less padding on small screens */
   }
-  
-  h1 {
-    margin-bottom: 20px;
+
+  .place-order {
+    width: 100%; /* Full width on smaller screens */
   }
-  
-  .form-group {
-    margin-bottom: 15px;
-  }
-  
-  label {
-    display: block;
-    margin-bottom: 5px;
-  }
-  
-  input[type="text"] {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-  }
-  
-  input[type="radio"] {
-    margin-right: 5px;
-  }
-  
-  button {
-    padding: 10px 15px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  button:hover {
-    background-color: #0056b3;
-  }
-  
+}
