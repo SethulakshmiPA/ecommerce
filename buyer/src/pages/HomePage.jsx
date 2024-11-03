@@ -33,7 +33,7 @@ const HomePage = () => {
           <Link to="/cart">
             <FontAwesomeIcon icon={faShoppingCart} className="icon" />
           </Link>
-          <Link to="/profile"> {/* Add link for profile page */}
+          <Link to="/profile"> {/* Link for profile page */}
             <FontAwesomeIcon icon={faUser} className="icon" />
           </Link>
         </div>
@@ -43,17 +43,21 @@ const HomePage = () => {
       <div className="categories">
         <button onClick={() => navigate("/women")} className="category-button">Women</button>
         <button onClick={() => navigate("/kids")} className="category-button">Kids</button>
-       
+        <button onClick={() => navigate("/men")} className="category-button">Men</button>
       </div>
 
       {/* Product List */}
       <div className="product-list">
         {products.map((product) => (
-          <div key={product.id} className="product-card">
+          <div 
+            key={product.id} 
+            className="product-card" 
+            onClick={() => navigate(`/product/${product.id}`)}
+          >
             <img src={product.img} alt={product.name} />
             <h3>{product.name}</h3>
             <p className="price">{product.price}</p>
-            <p className="brand-description">{product.brand} - High quality and stylish!</p> {/* Brand description */}
+            <p className="brand-description">High quality and stylish!</p> {/* Brand description */}
           </div>
         ))}
       </div>
@@ -62,5 +66,7 @@ const HomePage = () => {
 };
 
 export default HomePage;
+
+
 
 

@@ -1,0 +1,52 @@
+/* ProfilePage.css */
+
+.profile-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 2rem;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    background-color: #ffffff;
+    text-align: left;
+    font-family: 'Arial', sans-serif;
+    margin-top: 10vh;
+    color: #333;
+  }
+  
+  h2 {
+    font-size: 1.8rem;
+    color: #ff3e6c;
+    font-weight: bold;
+    margin-bottom: 1rem;
+  }
+  .emoji {
+    font-size: 4rem; /* Adjust the size as needed */
+    margin-bottom: 1rem; /* Space between emoji and details */
+  }
+  
+  .profile-info p {
+    margin: 0.5rem 0;
+    font-size: 1rem;
+  }
+  
+  button {
+    background-color: #ff3e6c;
+    color: #fff;
+    border: none;
+    padding: 0.8rem;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s, transform 0.1s;
+  }
+  
+  button:hover {
+    background-color: #e0335b;
+    transform: scale(1.02);
+  }
+  
+  button:active {
+    transform: scale(0.98);
+  }
+  
