@@ -21,7 +21,10 @@ const KidsPage = () => {
             <h3>{product.name}</h3>
             <p className="brand">{product.brand}</p>
             <p className="price">{product.price}</p>
-            <button className="buy-now">Buy Now</button>
+            {/* Wrap the button in a Link to navigate to the product detail page */}
+            <Link to={`/product/${product.id}`} className="buy-now">
+              Buy Now
+            </Link>
           </div>
         ))}
       </div>
@@ -30,3 +33,4 @@ const KidsPage = () => {
 };
 
 export default KidsPage;
+
