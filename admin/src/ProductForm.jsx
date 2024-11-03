@@ -1,111 +1,177 @@
 import React, { useState } from 'react';
-import './Admin.css';
 
+const ProductForm = ({ userId }) => { // Accept userId as a prop
+    const [product, setProduct] = useState({
+        name: '',
+        description: '',
+        price: '',
+        stock_quantity: '',
+        size: 'please',
+        color: '',
+        material: '',
+        brand_name: '',
+        category_id: '',
+    });
 
-const ProductForm = () => {
-  const [product, setProduct] = useState({
-    name: '',
-    description: '',
-    price: '',
-    stock_quantity: '',
-    size: 'please',
-    color: '',
-    material: '',
-    brand_name: '',
-    category_id: '',
-  });
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [error, setError] = useState('');
+    const [success, setSuccess] = useState('');
 
-  const [images, setImages] = useState([]);
-  const [imagePreviews, setImagePreviews] = useState([]);
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setProduct({ ...product, [name]: value });
+    };
 
-  const handleImageChange = (event) => {
-    setImages(event.target.files);
-    const previewImages = Array.from(event.target.files).map((file) => URL.createObjectURL(file));
-    setImagePreviews(previewImages);
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setIsSubmitting(true);
+        setError('');
+        setSuccess('');
+
+        if (!product.name) {
+            setError('Product name is required.');
+            setIsSubmitting(false);
+            return;
+        }
+
+        const formData = new FormData();
+        Object.keys(product).forEach((key) => {
+            formData.append(key, product[key]);
+        });
+
+        try {
+            const response = await fetch(`http://localhost:5000/api/products/admin/${userId}`, {
+                method: 'POST',
+                body: formData,
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                setSuccess('Product submitted successfully!');
+                console.log('Product submitted:', data);
+
+                setProduct({
+                    name: '',
+                    description: '',
+                    price: '',
+                    stock_quantity: '',
+                    size: 'please',
+                    color: '',
+                    material: '',
+                    brand_name: '',
+                    category_id: '',
+                });
+            } else {
+                const errorData = await response.json();
+                setError(`Error: ${errorData.message || 'Failed to submit the product.'}`);
+            }
+        } catch (error) {
+            setError('An error occurred while submitting the form.');
+            console.error('Error:', error);
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    return (
+      <div className="form-container">
+        <h2 className="form-title">Upload Product</h2>
+        {error && <p className="error-message">{error}</p>}
+        {success && <p className="success-message">{success}</p>}
+        <form onSubmit={handleSubmit}>
+          <label>Product Name</label>
+          <input
+            type="text"
+            name="name"
+            value={product.name}
+            onChange={handleInputChange}
+            placeholder="Enter product name"
+            required
+          />
+          
+          <label>Description</label>
+          <input
+            type="text"
+            name="description"
+            value={product.description}
+            onChange={handleInputChange}
+            placeholder="Enter product description"
+          />
+  
+          <label>Price</label>
+          <input
+            type="number"
+            name="price"
+            value={product.price}
+            onChange={handleInputChange}
+            placeholder="Enter price"
+          />
+          
+          <label>Stock Quantity</label>
+          <input
+            type="number"
+            name="stock_quantity"
+            value={product.stock_quantity}
+            onChange={handleInputChange}
+            placeholder="Enter stock quantity"
+          />
+  
+          <label>Size:</label>
+          <select name="size" value={product.size} onChange={handleInputChange}>
+            <option value="please">---please enter a size---</option>
+            <option value="XS">XS</option>
+            <option value="S">S</option>
+            <option value="M">M</option>
+            <option value="L">L</option>
+            <option value="XL">XL</option>
+            <option value="XXL">XXL</option>
+          </select>
+          
+          <label>Color</label>
+          <input
+            type="text"
+            name="color"
+            value={product.color}
+            onChange={handleInputChange}
+            placeholder="Enter color"
+          />
+  
+          <label>Material</label>
+          <input
+            type="text"
+            name="material"
+            value={product.material}
+            onChange={handleInputChange}
+            placeholder="Enter material"
+          />
+  
+          <label>Brand Name</label>
+          <input
+            type="text"
+            name="brand_name"
+            value={product.brand_name}
+            onChange={handleInputChange}
+            placeholder="Enter brand name"
+          />
+  
+          <label>Category ID</label>
+          <input
+            type="text"
+            name="category_id"
+            value={product.category_id}
+            onChange={handleInputChange}
+            placeholder="Enter category id"
+          />
+  
+          <div className="button-container">
+            <button type="submit" className="submit-btn" disabled={isSubmitting}>
+              {isSubmitting ? 'Submitting...' : 'Submit'}
+            </button>
+          </div>
+        </form>
+      </div>
+    );
   };
-
-  const handleAddMoreClick = () => {
-    document.getElementById('fileInput').click();
-  };
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    if (name === "stock_quantity") {
-      const newValue = Math.max(0, Number(value));
-      setProduct({ ...product, [name]: newValue });
-    } else {
-      setProduct({ ...product, [name]: value });
-    }
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log('Product submitted:', product);
-    console.log('Images submitted:', images);
-  };
-
-  return (
-    <div className="form-container">
-      <h2 className="form-title">Upload Product</h2>
-      <form onSubmit={handleSubmit}>
-        <label>Product Name</label>
-        <input type="text" name="name" value={product.name} onChange={handleInputChange} placeholder="Enter product name" required />
-
-        <label>Description</label>
-        <input type="text" name="description" value={product.description} onChange={handleInputChange} placeholder="Enter product description" />
-
-        <label>Price</label>
-        <input type="text" name="price" value={product.price} onChange={handleInputChange} placeholder="Enter price" />
-
-        <label>Stock Quantity</label>
-        <input type="number" name="stock_quantity" value={product.stock_quantity} onChange={handleInputChange} placeholder="Enter stock quantity" />
-
-        <label> Size:</label>
-        <br></br>
-        <select name="size" value={product.size} onChange={handleInputChange} className='full-width-dropdown'>
-          <option value="please">---please enter a size---</option>
-          <option value="XS">XS</option>
-          <option value="S">S</option>
-          <option value="M">M</option>
-          <option value="L">L</option>
-          <option value="XL">XL</option>
-          <option value="XXL">XXL</option>
-        </select>
-        <br></br>
-
-        <label>Color</label>
-        <input type="text" name="color" value={product.color} onChange={handleInputChange} placeholder="Enter color" />
-
-        <label>Material</label>
-        <input type="text" name="material" value={product.material} onChange={handleInputChange} placeholder="Enter material" />
-
-        <label>Brand Name</label>
-        <input type="text" name="brand_name" value={product.brand_name} onChange={handleInputChange} placeholder="Enter brand name" />
-
-        <label>Category ID</label>
-        <input type="text" name="category_id" value={product.category_id} onChange={handleInputChange} placeholder="Enter category id" />
-
-        <div>
-          <input type="file" id="fileInput" accept="image/*" multiple onChange={handleImageChange} />
-          <button onClick={handleAddMoreClick}>Add more files</button>
-          {images.length > 0 && (
-            <div>
-              {imagePreviews.map((imgSrc, index) => (
-                <div key={index} style={{ display: 'inline-block', margin: '10px' }}>
-                  <img src={imgSrc} alt="preview" style={{ width: '100px', height: '100px', objectFit: 'cover' }} />
-                  <p style={{ textAlign: 'center', fontSize: '0.8rem' }}>Pic {index + 1}</p>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        <div className="button-container">
-          <button type="submit" className="submit-btn">Submit</button>
-        </div>
-      </form>
-    </div>
-  );
-};
-
-export default ProductForm;
+  
+  export default ProductForm;
+  

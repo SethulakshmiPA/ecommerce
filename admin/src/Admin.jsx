@@ -7,15 +7,17 @@ import './Admin.css';
 const Admin = () => {
   const [currentPage, setCurrentPage] = useState('home');
   const navigate = useNavigate();
+  const userId = localStorage.getItem('userId'); // Retrieve userId from local storage
 
   useEffect(() => {
     if (!localStorage.getItem('isLoggedIn')) {
       navigate('/');
     }
-  }, []);
+  }, [navigate]);
 
   const handleLogout = () => {
     localStorage.removeItem('isLoggedIn');
+    localStorage.removeItem('userId'); // Clear userId on logout if necessary
     navigate('/');
   };
 
@@ -82,9 +84,9 @@ const Admin = () => {
             </table>
           </div>
         ) : currentPage === 'grid' ? (
-          <ProductGrid />
+          <ProductGrid userId={userId} />
         ) : (
-          <ProductForm />
+          <ProductForm userId={userId} /> // Pass userId to ProductForm
         )}
       </div>
     </div>
