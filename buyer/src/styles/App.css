@@ -1,0 +1,118 @@
+/* Retain previous CSS structure and add styles for new features */
+
+/* Navbar styling */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background-color: #ff3e6c;
+  color: #fff;
+}
+
+.navbar h1 {
+  font-size: 1.5rem;
+}
+
+/* Search bar styling */
+.search-container {
+  display: flex;
+}
+
+.search-container input {
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-right: 0.5rem;
+}
+
+.search-button {
+  background-color: #fff;
+  border: none;
+  color: #ff3e6c;
+  padding: 0.5rem;
+  cursor: pointer;
+}
+
+.icons .icon {
+  margin-left: 1rem;
+  font-size: 1.2rem;
+  color: #fff;
+}
+.icons .icon {
+  margin-left: 1rem;
+  font-size: 1.2rem;
+  color: #fff;
+}
+
+.icons .icon:hover {
+  color: #ffcccc; /* Change color on hover */
+}
+
+/* Category button styling */
+.categories {
+  margin: 1rem 0;
+  display: flex;
+  gap: 1rem;
+}
+
+.category-button {
+  background-color: #ff3e6c;
+  color: #fff;
+  padding: 0.8rem 1.2rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s;
+}
+
+.category-button:hover {
+  background-color: #e0335b;
+}
+
+/* Product list styling */
+.product-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1.5rem;
+}
+
+.product-card {
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 1rem;
+  text-align: center;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.product-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.product-card img {
+  width: 100%;
+  height: auto;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+}
+
+.product-card h3 {
+  font-size: 1.1rem;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.price {
+  color: #ff3e6c;
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+}
+.brand-description {
+  font-size: 0.8rem; /* Small font size */
+  color: #777; /* Light gray color */
+  margin: 0.5rem 0; /* Add some margin for spacing */
+}
+
+

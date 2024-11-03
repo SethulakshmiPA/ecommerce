@@ -1,0 +1,81 @@
+/* LoginPage.css */
+
+.login-container {
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 2.5rem;
+  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  background-color: #ffffff;
+  text-align: center;
+  font-family: 'Arial', sans-serif;
+  margin-top: 10vh;
+  color: #333;
+}
+
+h2 {
+  font-size: 1.8rem;
+  color: #ff3e6c;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="email"],
+input[type="tel"] {
+  padding: 0.8rem;
+  margin: 0.5rem 0;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="email"]:focus,
+input[type="tel"]:focus {
+  border-color: #ff3e6c;
+  outline: none;
+  box-shadow: 0 0 6px rgba(255, 62, 108, 0.3);
+}
+
+button {
+  background-color: #ff3e6c;
+  color: #fff;
+  border: none;
+  padding: 0.8rem;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s, transform 0.1s;
+}
+
+button:hover {
+  background-color: #e0335b;
+  transform: scale(1.02);
+}
+
+button:active {
+  transform: scale(0.98);
+}
+
+p {
+  margin-top: 1rem;
+  color: #555;
+  font-size: 0.9rem;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+p:hover {
+  color: #ff3e6c;
+}

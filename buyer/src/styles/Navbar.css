@@ -1,0 +1,42 @@
+* {
+    box-sizing: border-box; /* Include padding and border in element's total width and height */
+  }
+  
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+  }
+  
+  .navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background-color: #ff3f6d; /* Navbar background color */
+    color: white;
+    position: sticky; /* Keeps navbar at the top on scroll */
+    top: 0;
+    z-index: 1000; /* Ensures navbar is above other content */
+  }
+  
+  .navbar-title {
+    font-size: 2rem;
+    font-weight: bold; /* Bold title */
+  }
+  
+  .navbar-links {
+    list-style: none;
+    display: flex;
+    gap: 1.5rem; /* Space between links */
+  }
+  
+  .navbar-links a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold; /* Bold links */
+  }
+  
+  .navbar-links a:hover {
+    text-decoration: underline; /* Underline effect on hover */
+  }
+  
