@@ -1,19 +1,38 @@
-import React from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faShoppingCart, faHeart, faSearch, faUser } from "@fortawesome/free-solid-svg-icons"; // Import faUser for profile icon
+import { faShoppingCart, faHeart, faSearch, faUser } from "@fortawesome/free-solid-svg-icons";
 import "../styles/App.css";
 
 const HomePage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const [products, setProducts] = useState([]);
+  const userId = location.state?.userId || localStorage.getItem('userId');
 
-  // Sample product data
-  const products = [
-    { id: 1, name: "Women's Dress", price: "$49", img: "https://via.placeholder.com/150", category: "women" },
-    { id: 2, name: "Kids' T-Shirt", price: "$19", img: "https://via.placeholder.com/150", category: "kids" },
-    { id: 3, name: "Men's Jacket", price: "$89", img: "https://via.placeholder.com/150", category: "men" },
-    { id: 4, name: "Women's Shoes", price: "$59", img: "https://via.placeholder.com/150", category: "women" },
-  ];
+  useEffect(() => {
+    // Fetch products from API
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/api/products", {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+          }
+        });
+        
+        if (!response.ok) throw new Error("Failed to fetch products.");
+
+        const data = await response.json();
+        if (data.success) {
+          setProducts(data.productList);
+        }
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      }
+    };
+
+    fetchProducts();
+  }, []);
 
   return (
     <div className="homepage-container">
@@ -33,7 +52,7 @@ const HomePage = () => {
           <Link to="/cart">
             <FontAwesomeIcon icon={faShoppingCart} className="icon" />
           </Link>
-          <Link to="/profile"> {/* Link for profile page */}
+          <Link to="/profile">
             <FontAwesomeIcon icon={faUser} className="icon" />
           </Link>
         </div>
@@ -48,24 +67,29 @@ const HomePage = () => {
 
       {/* Product List */}
       <div className="product-list">
-        {products.map((product) => (
-          <div 
-            key={product.id} 
-            className="product-card" 
-            onClick={() => navigate(`/product/${product.id}`)}
-          >
-            <img src={product.img} alt={product.name} />
-            <h3>{product.name}</h3>
-            <p className="price">{product.price}</p>
-            <p className="brand-description">High quality and stylish!</p> {/* Brand description */}
-          </div>
-        ))}
+        {products.length > 0 ? (
+          products.map((product) => (
+            <div
+              key={product.product_id}
+              className="product-card"
+              onClick={() => navigate(`/product/${product.product_id}`, { state: { userId } })}
+            >
+              <img src={product.image || "https://via.placeholder.com/150"} alt={product.name} />
+              <h3>{product.name}</h3>
+              <p className="price">${product.price}</p>
+              <p className="brand-description">{product.brand_name}</p>
+            </div>
+          ))
+        ) : (
+          <p>Loading products...</p>
+        )}
       </div>
     </div>
   );
 };
 
 export default HomePage;
+
 
 
 
