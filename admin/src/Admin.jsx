@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ProductForm from './ProductForm';
 import ProductGrid from './ProductGrid';
-import './Admin.css';
+// import './Admin.css';
 
 const Admin = () => {
   const [currentPage, setCurrentPage] = useState('home');
@@ -15,10 +15,21 @@ const Admin = () => {
     }
   }, [navigate]);
 
-  const handleLogout = () => {
-    localStorage.removeItem('isLoggedIn');
-    localStorage.removeItem('userId'); // Clear userId on logout if necessary
-    navigate('/');
+  const handleLogout = async () => {
+    try {
+      // Send a GET request to the logout endpoint
+      await fetch('http://localhost:5000/api/auth/logout', {
+        method: 'GET',
+        credentials: 'include', // Include credentials if necessary
+      });
+      
+      // Clear local storage and navigate to login page
+      localStorage.removeItem('isLoggedIn');
+      localStorage.removeItem('userId'); // Clear userId on logout
+      navigate('/'); // Navigate to the login page
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
   };
 
   return (

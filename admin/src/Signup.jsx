@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './signup.css';
+import { Spinner } from 'react-bootstrap'; // Import Spinner component
+import './signup.css'; // Ensure the CSS file is imported
 
 const Signup = () => {
   const [password, setPassword] = useState('');
@@ -14,10 +15,14 @@ const Signup = () => {
   const [postal_code, setPostalCode] = useState('');
   const [country, setCountry] = useState('');
   const [userrole, setUserrole] = useState('');
+  const [loading, setLoading] = useState(false); // State for loading spinner
+  const [error, setError] = useState(null); // State for error handling
   const navigate = useNavigate();
 
   const handleSignup = async (e) => {
     e.preventDefault();
+    setError(null);
+    setLoading(true);
 
     if (
       fullname &&
@@ -63,17 +68,20 @@ const Signup = () => {
             localStorage.setItem('userId', data.userId); // Store the user ID in local storage
             navigate('/admin'); // Navigate to the admin page without user ID in the URL
           } else {
-            alert('User ID not found in response');
+            setError('User ID not found in response');
           }
         } else {
-          alert(data.message || 'Failed to insert data into database'); // Use the message from the backend if available
+          setError(data.message || 'Failed to insert data into database'); // Use the message from the backend if available
         }
       } catch (error) {
         console.error('Error:', error);
-        alert('An error occurred during signup');
+        setError('An error occurred during signup');
+      } finally {
+        setLoading(false);
       }
     } else {
-      alert('Please fill out all fields');
+      setError('Please fill out all fields');
+      setLoading(false);
     }
   };
 
@@ -148,8 +156,11 @@ const Signup = () => {
               <option value="admin">Admin</option>
               <option value="user">User</option>
             </select>
-            <button type="submit">Sign up</button>
+            <button type="submit" disabled={loading}>
+              {loading ? <Spinner animation="border" size="sm" /> : 'Sign up'}
+            </button>
           </form>
+          {error && <p className="error">{error}</p>}
           <p>
             Already have an account? <a href="/">Login</a>
           </p>

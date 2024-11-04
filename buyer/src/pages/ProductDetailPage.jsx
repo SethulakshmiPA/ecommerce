@@ -1,96 +1,127 @@
-import React from "react";
-import { useNavigate, useParams } from "react-router-dom"; // Import useNavigate and useParams
-import "../styles/ProductPage.css"; // Import CSS for styling
+import React, { useState, useEffect } from "react";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
+import { Container, Row, Col, Button, Spinner, Alert } from 'react-bootstrap';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faImage } from "@fortawesome/free-solid-svg-icons";
+import "../styles/ProductPage.css";
 
 const ProductDetailPage = () => {
-  const navigate = useNavigate(); // Initialize useNavigate
-  const { id } = useParams(); // Get the product ID from the URL
+  const navigate = useNavigate();
+  const { id } = useParams(); // Get product ID from URL
+  const location = useLocation();
+  const userId = location.state?.userId || localStorage.getItem('userId'); // Get userId from location or localStorage
+  const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Sample product data for Women's and Kids' products
-  const products = [
-    {
-      id: 1,
-      name: "Women's Dress",
-      price: "$49",
-      images: [
-        "https://via.placeholder.com/350?text=Image+1",
-        "https://via.placeholder.com/350?text=Image+2",
-        "https://via.placeholder.com/350?text=Image+3",
-      ],
-      color: "Blue",
-      material: "Cotton",
-      sizes: ["S", "M", "L"],
-    },
-    {
-      id: 1,
-      name: "Kids T-shirt",
-      price: "$20",
-      images: [
-        "https://via.placeholder.com/350?text=Kids+Image+1",
-        "https://via.placeholder.com/350?text=Kids+Image+2",
-        "https://via.placeholder.com/350?text=Kids+Image+3",
-      ],
-      color: "Red",
-      material: "Polyester",
-      sizes: ["S", "M", "L"],
-    },
-    // Add more kids products as needed
-  ];
+  useEffect(() => {
+    // Fetch product details by userId and product ID
+    const fetchProductDetails = async () => {
+      try {
+        const response = await fetch(`http://localhost:5000/api/products/${id}`, {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+          }
+        });
 
-  // Find the product by ID
-  const product = products.find((prod) => prod.id === parseInt(id));
+        if (!response.ok) throw new Error("Failed to fetch product details.");
+
+        const data = await response.json();
+        if (data.success) {
+          setProduct(data.product[0]);
+        } else {
+          setError("Product not found.");
+        }
+      } catch (error) {
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProductDetails();
+  }, [id, userId]);
 
   const handleAddToCart = () => {
-    // Add to cart logic
     console.log(`${product.name} added to cart!`);
   };
 
   const handleAddToWishlist = () => {
-    // Add to wishlist logic
     console.log(`${product.name} added to wishlist!`);
   };
 
-  // Function to handle placing an order
   const handlePlaceOrder = () => {
-    navigate("/checkout"); // Redirect to the checkout page
+    const orderDetails = {
+      userId,
+      total_amount: product.price,
+      shipping_fee: 50, // Assuming a fixed shipping fee
+      product_id: product.id,
+      admin_id: "b199239b-7916-425e-87b2-12bc19c442ab" // Assuming a fixed admin ID
+    };
+    navigate("/checkout", { state: orderDetails });
   };
 
-  if (!product) {
-    return <p>Product not found!</p>; // Handle case where product is not found
-  }
+  const handleImageError = (e) => {
+    e.target.src = "";
+    e.target.alt = "Image not available";
+    e.target.style.display = "none";
+    e.target.nextSibling.style.display = "block";
+  };
+
+  if (loading) return <Spinner animation="border" />;
+  if (error) return <Alert variant="danger">{error}</Alert>;
 
   return (
-    <div className="product-detail-container">
-      <div className="image-gallery">
-        {product.images.map((img, index) => (
-          <img key={index} src={img} alt={`Product Image ${index + 1}`} className="main-image" />
-        ))}
-      </div>
-      <div className="product-info">
-        <h2>{product.name}</h2>
-        <p className="price">{product.price}</p>
-        <div className="product-details">
-          <p><span className="label">Color:</span> {product.color}</p>
-          <p><span className="label">brand:</span> {product.brand}</p>
-          <p><span className="label">Material:</span> {product.material}</p>
-          <p><span className="label">Sizes:</span> {product.sizes.join(", ")}</p>
-        </div>
-        <div className="size-selection">
-          <label htmlFor="size">Select Size:</label>
-          <select id="size">
-            {product.sizes.map((size) => (
-              <option key={size} value={size}>{size}</option>
-            ))}
-          </select>
-        </div>
-        <button className="add-to-cart" onClick={handleAddToCart}>Add to Cart</button>
-        <button className="add-to-wishlist" onClick={handleAddToWishlist}>Add to Wishlist</button>
-        <button className="place-order" onClick={handlePlaceOrder}>Place Order</button>
-      </div>
-    </div>
+    <Container className="product-detail-container" style={{ padding: '20px' }}>
+      <Row>
+        <Col md={6} className="image-gallery" style={{ marginBottom: '20px' }}>
+          {product.images ? (
+            product.images.map((img, index) => (
+              <div key={index} style={{ position: 'relative' }}>
+                <img 
+                  src={img || "https://via.placeholder.com/350"} 
+                  alt={`Product Image ${index + 1}`} 
+                  className="main-image" 
+                  style={{ marginBottom: '10px' }} 
+                  onError={handleImageError}
+                />
+                <FontAwesomeIcon 
+                  icon={faImage} 
+                  style={{ 
+                    position: 'absolute', 
+                    top: '50%', 
+                    left: '50%', 
+                    transform: 'translate(-50%, -50%)', 
+                    fontSize: '2rem', 
+                    color: '#ccc', 
+                    display: 'none' 
+                  }} 
+                />
+              </div>
+            ))
+          ) : (
+            <img src="https://via.placeholder.com/350" alt="Placeholder" className="main-image" />
+          )}
+        </Col>
+        <Col md={6} className="product-info" style={{ padding: '20px', backgroundColor: '#f9f9f9', borderRadius: '8px' }}>
+          <h2 style={{ fontSize: '2rem', marginBottom: '20px' }}>{product.name}</h2>
+          <p className="price" style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#e63946', marginBottom: '20px' }}>${product.price}</p>
+          <div className="product-details" style={{ marginBottom: '20px' }}>
+            <p><span className="label" style={{ fontWeight: 'bold' }}>Color:</span> {product.color}</p>
+            <p><span className="label" style={{ fontWeight: 'bold' }}>Brand:</span> {product.brand_name}</p>
+            <p><span className="label" style={{ fontWeight: 'bold' }}>Material:</span> {product.material}</p>
+            <p><span className="label" style={{ fontWeight: 'bold' }}>Size:</span> {product.size}</p>
+            <p><span className="label" style={{ fontWeight: 'bold' }}>Stock Quantity:</span> {product.stock_quantity}</p>
+            <p><span className="label" style={{ fontWeight: 'bold' }}>Description:</span> {product.description}</p>
+          </div>
+          <Button variant="primary" className="add-to-cart" onClick={handleAddToCart} style={{ marginBottom: '10px', width: '100%' }}>Add to Cart</Button>
+          <Button variant="secondary" className="add-to-wishlist" onClick={handleAddToWishlist} style={{ marginBottom: '10px', width: '100%' }}>Add to Wishlist</Button>
+          <Button variant="success" className="place-order" onClick={handlePlaceOrder} style={{ width: '100%' }}>Place Order</Button>
+        </Col>
+      </Row>
+    </Container>
   );
 };
 
 export default ProductDetailPage;
-
 

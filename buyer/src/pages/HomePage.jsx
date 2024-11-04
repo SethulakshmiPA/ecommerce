@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Container, Row, Col, Button, Spinner, Alert } from 'react-bootstrap';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faShoppingCart, faHeart, faSearch, faUser } from "@fortawesome/free-solid-svg-icons";
 import "../styles/App.css";
@@ -8,10 +9,11 @@ const HomePage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const userId = location.state?.userId || localStorage.getItem('userId');
 
   useEffect(() => {
-    // Fetch products from API
     const fetchProducts = async () => {
       try {
         const response = await fetch("http://localhost:5000/api/products", {
@@ -19,7 +21,7 @@ const HomePage = () => {
             'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
           }
         });
-        
+
         if (!response.ok) throw new Error("Failed to fetch products.");
 
         const data = await response.json();
@@ -27,7 +29,9 @@ const HomePage = () => {
           setProducts(data.productList);
         }
       } catch (error) {
-        console.error("Error fetching products:", error);
+        setError(error.message);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -35,15 +39,15 @@ const HomePage = () => {
   }, []);
 
   return (
-    <div className="homepage-container">
+    <Container className="homepage-container">
       {/* Header */}
       <header className="navbar">
         <h1>E-COMMERCE</h1>
         <div className="search-container">
           <input type="text" placeholder="Search for products..." />
-          <button className="search-button">
+          <Button className="search-button">
             <FontAwesomeIcon icon={faSearch} />
-          </button>
+          </Button>
         </div>
         <div className="icons">
           <Link to="/wishlist">
@@ -60,37 +64,35 @@ const HomePage = () => {
 
       {/* Category Buttons */}
       <div className="categories">
-        <button onClick={() => navigate("/women")} className="category-button">Women</button>
-        <button onClick={() => navigate("/kids")} className="category-button">Kids</button>
-        <button onClick={() => navigate("/men")} className="category-button">Men</button>
+        <Button onClick={() => navigate("/women")} className="category-button">Women</Button>
+        <Button onClick={() => navigate("/kids")} className="category-button">Kids</Button>
+        <Button onClick={() => navigate("/men")} className="category-button">Men</Button>
       </div>
 
       {/* Product List */}
-      <div className="product-list">
-        {products.length > 0 ? (
-          products.map((product) => (
-            <div
-              key={product.product_id}
-              className="product-card"
-              onClick={() => navigate(`/product/${product.product_id}`, { state: { userId } })}
-            >
-              <img src={product.image || "https://via.placeholder.com/150"} alt={product.name} />
-              <h3>{product.name}</h3>
-              <p className="price">${product.price}</p>
-              <p className="brand-description">{product.brand_name}</p>
-            </div>
-          ))
+      <Row className="product-list">
+        {loading ? (
+          <Spinner animation="border" />
+        ) : error ? (
+          <Alert variant="danger">{error}</Alert>
         ) : (
-          <p>Loading products...</p>
+          products.length > 0 ? (
+            products.map((product) => (
+              <Col key={product.product_id} md={4} className="product-card" onClick={() => navigate(`/product/${product.product_id}`, { state: { userId } })}>
+                <img src={product.image || "https://via.placeholder.com/150"} alt={product.name} />
+                <h3>{product.name}</h3>
+                <p className="price">${product.price}</p>
+                <p className="brand-description">{product.brand_name}</p>
+              </Col>
+            ))
+          ) : (
+            <p>No products available.</p>
+          )
         )}
-      </div>
-    </div>
+      </Row>
+    </Container>
   );
 };
 
 export default HomePage;
-
-
-
-
 
