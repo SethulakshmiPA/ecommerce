@@ -5,43 +5,73 @@ import '../styles/LoginPage.css';
 const LoginPage = () => {
   const [isSignup, setIsSignup] = useState(false);
   const [credentials, setCredentials] = useState({
+    fullname: '',
     email: '',
     password: '',
-    contact: '',
-    address1: '',
-    address2: '',
+    phonenumber: '',
+    address_line_1: '',
+    address_line_2: '',
     city: '',
     state: '',
-    postcode: '',
+    postal_code: '',
     country: '',
-    userRole: ''
+    userrole: ''
   });
-  const navigate = useNavigate(); // useNavigate hook
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setCredentials({ ...credentials, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (isSignup) {
-      // Handle signup logic here
-      console.log('Signing up with:', credentials);
-      // Add your signup logic, e.g., calling an API to create a new user
-    } else {
-      // Handle login logic here
-      console.log('Logging in with:', credentials.email, credentials.password);
-      // Add your login logic, e.g., calling an API to authenticate the user
+    setError(null);
+
+    const url = isSignup 
+      ? 'http://localhost:5000/api/users/signup'
+      : 'http://localhost:5000/api/auth/login';
+
+    // Create a request payload with only required fields for login or signup
+    const payload = isSignup 
+      ? credentials 
+      : { email: credentials.email, password: credentials.password };
+
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        throw new Error(isSignup ? 'Signup failed. Please try again.' : 'Login failed. Please check your email and password.');
+      }
+
+      const data = await response.json();
+
+      // Store user ID and token in localStorage if login was successful
+      if (!isSignup) {
+        localStorage.setItem('accessToken', data.access);
+        localStorage.setItem('userId', data.user_id);
+        navigate('/home', { state: { userId: data.user_id } });
+      } else {
+        const userId = data.userId;
+        navigate('/home', { state: { userId } });
+      }
+    } catch (err) {
+      setError(err.message);
     }
-    
-    // Redirect to the homepage after login or signup
-    navigate('/home'); 
   };
 
   return (
     <div className="login-container">
       <h2>{isSignup ? 'Sign Up' : 'Login'}</h2>
       <form onSubmit={handleSubmit}>
+        {error && <p className="error">{error}</p>}
+        
         {!isSignup ? (
           <>
             <input
@@ -64,6 +94,14 @@ const LoginPage = () => {
         ) : (
           <>
             <input
+              type="text"
+              name="fullname"
+              placeholder="Full Name"
+              value={credentials.fullname}
+              onChange={handleChange}
+              required
+            />
+            <input
               type="email"
               name="email"
               placeholder="Email"
@@ -81,25 +119,25 @@ const LoginPage = () => {
             />
             <input
               type="tel"
-              name="contact"
+              name="phonenumber"
               placeholder="Contact Number"
-              value={credentials.contact}
+              value={credentials.phonenumber}
               onChange={handleChange}
               required
             />
             <input
               type="text"
-              name="address1"
+              name="address_line_1"
               placeholder="Address Line 1"
-              value={credentials.address1}
+              value={credentials.address_line_1}
               onChange={handleChange}
               required
             />
             <input
               type="text"
-              name="address2"
+              name="address_line_2"
               placeholder="Address Line 2"
-              value={credentials.address2}
+              value={credentials.address_line_2}
               onChange={handleChange}
             />
             <input
@@ -120,9 +158,9 @@ const LoginPage = () => {
             />
             <input
               type="text"
-              name="postcode"
+              name="postal_code"
               placeholder="Postcode"
-              value={credentials.postcode}
+              value={credentials.postal_code}
               onChange={handleChange}
               required
             />
@@ -135,18 +173,18 @@ const LoginPage = () => {
               required
             />
             <select
-              name="userRole"
-              value={credentials.userRole}
+              name="userrole"
+              value={credentials.userrole}
               onChange={handleChange}
               required
             >
               <option value="">Select User Role</option>
-              <option value="user">User</option>
+              <option value="customer">Customer</option>
               <option value="admin">Admin</option>
-              {/* Add more roles as needed */}
             </select>
           </>
         )}
+        
         <button type="submit">{isSignup ? 'Sign Up' : 'Login'}</button>
         <p onClick={() => setIsSignup(!isSignup)}>
           {isSignup ? 'Already have an account? Login' : 'New here? Sign up'}
@@ -157,6 +195,3 @@ const LoginPage = () => {
 };
 
 export default LoginPage;
-
-
-
