@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { Alert, Spinner, Modal, Button } from 'react-bootstrap';
 import "../styles/CheckoutPage.css"; // Import your CSS file
 
 const CheckoutPage = () => {
@@ -9,38 +10,51 @@ const CheckoutPage = () => {
 
   const [quantity, setQuantity] = useState(1);
   const [orderStatus, setOrderStatus] = useState("pending");
+  const [showAlert, setShowAlert] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
   const handlePlaceOrder = async () => {
-    const orderDetails = {
-      order_status: orderStatus,
-      total_amount,
-      product_id,
-      quantity,
-      admin_id,
-      shipping_fee,
-    };
+    if (window.confirm("Do you want to confirm the order?")) {
+      const orderDetails = {
+        order_status: orderStatus,
+        total_amount,
+        product_id,
+        quantity,
+        admin_id,
+        shipping_fee,
+      };
 
-    try {
-      const response = await fetch(`http://localhost:5000/api/orders/${userId}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${localStorage.getItem('accessToken')}`
-        },
-        body: JSON.stringify(orderDetails)
-      });
+      setLoading(true);
 
-      if (!response.ok) throw new Error("Failed to place order.");
+      try {
+        const response = await fetch(`http://localhost:5000/api/orders/${userId}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${localStorage.getItem('accessToken')}`
+          },
+          body: JSON.stringify(orderDetails)
+        });
 
-      navigate("/");
-    } catch (error) {
-      console.error("Error placing order:", error);
+        if (!response.ok) throw new Error("Failed to place order.");
+      } catch (error) {
+        console.error("Error placing order:", error);
+      } finally {
+        setLoading(false);
+        setShowModal(true);
+        setTimeout(() => {
+          setShowModal(false);
+          navigate("/home");
+        }, 3000);
+      }
     }
   };
 
   return (
     <div className="checkout-container">
       <h2>Checkout</h2>
+      {loading && <Spinner animation="border" />}
       <div className="checkout-input">
         <label htmlFor="name">Full Name</label>
         <input type="text" id="name" placeholder="Enter your name" />
@@ -74,6 +88,22 @@ const CheckoutPage = () => {
         <p>Shipping Fee: ${shipping_fee}</p>
         <p>Total: ${total_amount + shipping_fee}</p>
       </div>
+      <Modal show={showModal} onHide={() => setShowModal(false)} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Order Status</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Alert variant="success" className="d-flex align-items-center">
+            <Spinner animation="border" size="sm" className="me-2" />
+            Order placed successfully!
+          </Alert>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowModal(false)}>
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };
