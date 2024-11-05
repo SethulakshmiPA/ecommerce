@@ -23,12 +23,14 @@ const Admin = () => {
         credentials: 'include', // Include credentials if necessary
       });
       
-      // Clear local storage and navigate to login page
+      // Clear local storage
       localStorage.removeItem('isLoggedIn');
       localStorage.removeItem('userId'); // Clear userId on logout
-      navigate('/'); // Navigate to the login page
     } catch (error) {
       console.error('Logout failed:', error);
+    } finally {
+      // Navigate to the login page unconditionally
+      navigate('/');
     }
   };
 
