@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Container, Row, Col, Button, Spinner, Alert } from 'react-bootstrap';
+import { Container, Row, Col, Button, Spinner, Alert, Form, InputGroup, Card } from 'react-bootstrap';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faShoppingCart, faHeart, faSearch, faUser } from "@fortawesome/free-solid-svg-icons";
-import "../styles/App.css";
+//import "../styles/App.css";
 
 const HomePage = () => {
   const navigate = useNavigate();
@@ -39,34 +39,34 @@ const HomePage = () => {
   }, []);
 
   return (
-    <Container className="homepage-container">
+    <Container fluid className="p-4">
       {/* Header */}
-      <header className="navbar">
-        <h1>E-COMMERCE</h1>
-        <div className="search-container">
-          <input type="text" placeholder="Search for products..." />
-          <Button className="search-button">
+      <header className="navbar mb-4 p-3 shadow-sm rounded">
+        <h1 className="text-primary">E-COMMERCE</h1>
+        <InputGroup className="search-container mb-3">
+          <Form.Control type="text" placeholder="Search for products..." />
+          <Button variant="outline-primary" className="search-button">
             <FontAwesomeIcon icon={faSearch} />
           </Button>
-        </div>
+        </InputGroup>
         <div className="icons">
           <Link to="/wishlist">
-            <FontAwesomeIcon icon={faHeart} className="icon" />
+            <FontAwesomeIcon icon={faHeart} className="icon mx-2" />
           </Link>
           <Link to="/cart">
-            <FontAwesomeIcon icon={faShoppingCart} className="icon" />
+            <FontAwesomeIcon icon={faShoppingCart} className="icon mx-2" />
           </Link>
           <Link to="/profile">
-            <FontAwesomeIcon icon={faUser} className="icon" />
+            <FontAwesomeIcon icon={faUser} className="icon mx-2" />
           </Link>
         </div>
       </header>
 
       {/* Category Buttons */}
-      <div className="categories">
-        <Button onClick={() => navigate("/women")} className="category-button">Women</Button>
-        <Button onClick={() => navigate("/kids")} className="category-button">Kids</Button>
-        <Button onClick={() => navigate("/men")} className="category-button">Men</Button>
+      <div className="categories mb-4">
+        <Button onClick={() => navigate("/women")} className="category-button mx-2">Women</Button>
+        <Button onClick={() => navigate("/kids")} className="category-button mx-2">Kids</Button>
+        <Button onClick={() => navigate("/men")} className="category-button mx-2">Men</Button>
       </div>
 
       {/* Product List */}
@@ -78,11 +78,15 @@ const HomePage = () => {
         ) : (
           products.length > 0 ? (
             products.map((product) => (
-              <Col key={product.product_id} md={4} className="product-card" onClick={() => navigate(`/product-details`, { state: { productId: product.product_id, userId } })}>
-                <img src={product.image || "https://via.placeholder.com/150"} alt={product.name} />
-                <h3>{product.name}</h3>
-                <p className="price">${product.price}</p>
-                <p className="brand-description">{product.brand_name}</p>
+              <Col key={product.product_id} md={4} className="mb-4">
+                <Card className="product-card shadow-sm rounded" onClick={() => navigate(`/product-details`, { state: { productId: product.product_id, userId } })}>
+                  <Card.Img variant="top" src={product.image || "https://via.placeholder.com/150"} alt={product.name} />
+                  <Card.Body>
+                    <Card.Title>{product.name}</Card.Title>
+                    <Card.Text className="price">${product.price}</Card.Text>
+                    <Card.Text className="brand-description">{product.brand_name}</Card.Text>
+                  </Card.Body>
+                </Card>
               </Col>
             ))
           ) : (
